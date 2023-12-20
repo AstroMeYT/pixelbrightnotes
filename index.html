@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixel BrightNotes v1.0</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+	  background-color: #181818;
+    }
+
+    #toolbar {
+      padding: 10px;
+      background-color: #181818;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #toolbar button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      margin: 0 2px;
+      cursor: pointer;
+      border-radius: 5px; /* Adding rounded corners */
+    }
+
+    #toolbar select {
+      margin: 5px;
+    }
+
+    #toolbar input[type="file"] {
+      display: none;
+    }
+
+    #toolbar button.save {
+      background-color: #27ae60; /* Green color for save button */
+    }
+	
+	#toolbar button.load {
+      background-color: #27ae60;
+    }
+
+    #editor {
+      border: 1px solid #ccc;
+      min-height: 600px;
+      padding: 10px;
+      margin-top: 10px;
+      width: calc(100% - 22px); /* Adjusting the width */
+	  background-color: white;
+    }
+	
+	#toolbar .spacer {
+	  margin-right: 10px;
+	}
+	
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <button onclick="execCmd('justifyLeft')">Align Left</button>
+    <button onclick="execCmd('justifyCenter')">Align Center</button>
+    <button onclick="execCmd('justifyRight')">Align Right</button>
+    <button onclick="execCmd('justifyFull')">Justify</button>
+    <span class="spacer"></span> 
+    <button onclick="execCmd('bold')">Bold</button>
+    <button onclick="execCmd('italic')">Italic</button>
+    <button onclick="execCmd('underline')">Underline</button>
+    <br>
+    <label></label>
+    <select onchange="execCmdWithArg('fontName', this.value)">
+      <option value="Arial">Arial</option>
+      <option value="Arial Black">Arial Black</option>
+      <option value="Arial Black">Sans-serifk</option>
+    </select>
+    <input type="file" id="fileInput" style="display: none;" accept=".txt">
+    <span class="spacer"></span>
+   <button class="load" onclick="loadFile()">Load</button>
+    <button class="save" onclick="saveFile()">Save</button>
+  </div>
+  <div id="editor" contenteditable="true"></div>
+  
+  <script>
+    function execCmd(command) {
+      document.execCommand(command, false, null);
+    }
+
+    function execCmdWithArg(command, arg) {
+      document.execCommand(command, false, arg);
+    }
+
+    function loadFile() {
+      const fileInput = document.getElementById('fileInput');
+      fileInput.onchange = function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          const text = event.target.result;
+          document.getElementById('editor').innerText = text;
+        };
+
+        reader.readAsText(file);
+      };
+
+      fileInput.click(); // Trigger file input click to open file dialog
+    }
+
+    function saveFile() {
+      const textToSave = document.getElementById('editor').innerText;
+      const blob = new Blob([textToSave], { type: 'text/plain' });
+      const a = document.createElement('a');
+      const fileName = prompt('Enter file name:', 'document.txt') || 'document.txt';
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      a.click();
+    }
+  </script>
+</body>
+</html>
